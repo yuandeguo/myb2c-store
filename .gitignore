@@ -1,0 +1,8 @@
+# Project exclude paths
+/store-commons/target/
+/store-front-carousel3003/target/
+/store-front-category3005/target/
+/store-front-product3004/target/
+/store-front-user3001/target/
+/store-gateway3000/target/
+/store-static-oss3002/target/

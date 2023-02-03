@@ -1,0 +1,31 @@
+# 配置网关
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service # id 表示路由规则的名称，不唯一即可
+          uri: lb://user-service3001 # lb负载均衡，后面写对应的服务名称
+          predicates:
+            - Path=/user/**  # 访问user路径转发用户服务
+
+
+        # 静态资源对应的服务
+        - id: static-service3002
+          uri: lb://static-service3002 #静态资源处理以及oss上传服务!
+          predicates:
+            - Path=/public/**
+
+        - id: carousel-service3003 # 轮播图服务
+          uri: lb://carousel-service3003 #静态资源处理以及oss上传服务!
+          predicates:
+            - Path=/carousel/**
+
+        - id: product-service   # 商品服务
+          uri: lb://product-service3004
+          predicates:
+            - Path=/product/** # 访问product相关,转发到product服务
+
+        - id: category-service3005  # 类别服务
+          uri: lb://category-service3005
+          predicates:
+            - Path=/category/**       #类别服务

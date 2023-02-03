@@ -1,0 +1,12 @@
+
+
+#  static-locations只要静态资源放在类路径下： /static (or /public or /resources or /META-INF/resources，就行，
+
+
+
+spring:
+  mvc:
+    # 这里设置 访问静态资源的路径
+    static-path-pattern: /public/**
+  resources:
+    static-locations: classpath:/public/
