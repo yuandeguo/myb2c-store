@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: search-service3007
+  cloud:
+    nacos:
+      server-addr: 47.113.219.144:1111
+server:
+  port: 3007
