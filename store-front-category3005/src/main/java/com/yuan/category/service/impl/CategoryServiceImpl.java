@@ -72,4 +72,15 @@ private CategoryMapper categoryMapper;
 
 
     }
+
+    /**
+     * 查询类别数据进行返回
+     *
+     * @return
+     */
+    @Override
+    public R list() {
+        List<Category> categories = categoryMapper.selectList(null);
+ return R.ok("查询所有类别信息成功",categories);
+    }
 }

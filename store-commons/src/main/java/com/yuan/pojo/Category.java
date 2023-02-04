@@ -3,6 +3,7 @@ package com.yuan.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -15,6 +16,8 @@ import lombok.Data;
 @TableName("category")
 public class Category {
 @TableId(type = IdType.AUTO)
+@JsonProperty("category_id")
   private  Integer  categoryId;
+  @JsonProperty("categoryName")
 private String categoryName;
 }

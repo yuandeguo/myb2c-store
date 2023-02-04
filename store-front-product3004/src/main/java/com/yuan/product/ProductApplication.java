@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.yuan.clients.CategoryClient;
+import com.yuan.clients.SearchClient;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Bean;
  * @Description 商品服务
  */
 @SpringBootApplication
-@EnableFeignClients(clients = {CategoryClient.class})
+@EnableFeignClients(clients = {CategoryClient.class, SearchClient.class})
 @MapperScan(basePackages = "com.yuan.product.mapper")
 public class ProductApplication {
     public static void main(String[] args) {

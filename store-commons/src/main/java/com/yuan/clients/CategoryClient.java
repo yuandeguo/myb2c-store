@@ -22,5 +22,6 @@ public interface CategoryClient {
     R byName(@PathVariable String categoryName);
     @PostMapping("/category/hots")
      R hotsCategory(@RequestBody @Validated ProductHotParam productHotParam);
-
+    @GetMapping("/category/list")
+     R list();
 }

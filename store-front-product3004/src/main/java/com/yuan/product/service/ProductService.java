@@ -1,7 +1,13 @@
 package com.yuan.product.service;
 
+import com.yuan.param.ProductDetailParam;
 import com.yuan.param.ProductHotParam;
+import com.yuan.param.ProductIdsParams;
+import com.yuan.param.ProductSearchParam;
+import com.yuan.pojo.Product;
 import com.yuan.utils.R;
+
+import java.util.List;
 
 /**
  * @author yuanyuan
@@ -26,4 +32,43 @@ public interface ProductService {
      * @return r
      */
     R hots(ProductHotParam productHotParam);
+    /**
+     * 查询类别商品集合
+     *
+     * @return
+     */
+    R clist();
+    /**
+     * 根据类别集合查询商品信息
+     * @param productIdsParams
+     * @return
+     */
+    R  byCategory(ProductIdsParams productIdsParams);
+
+    /**
+     * 根据id查询商品的详细信息
+     * @param productDetailParam
+     * @return  返回商品详细信息
+     */
+    R detail(ProductDetailParam productDetailParam);
+    /**
+     * 根据id查询商品的图片信息
+     * @param productID
+     * @return  返回商品图片信息
+     */
+    R pictures(Integer productID);
+
+    /**
+     * 查询全部商品信息,供search服务
+     * 进行数据的同步
+     * @return
+     */
+    List<Product> list();
+
+    /**
+     * 根据search参数查询商品
+     * @param productSearchParam
+     * @return
+     */
+    R search(ProductSearchParam productSearchParam);
 }

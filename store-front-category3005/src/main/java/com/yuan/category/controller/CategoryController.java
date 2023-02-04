@@ -54,7 +54,11 @@ return categoryService.byName(categoryName);
 
         return categoryService.hotsCategory(productHotParam);
     }
+    @GetMapping("list")
+    public R list(){
 
+        return categoryService.list();
+    }
 
 
 }

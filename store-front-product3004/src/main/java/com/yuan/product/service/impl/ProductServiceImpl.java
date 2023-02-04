@@ -4,8 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.clients.CategoryClient;
+import com.yuan.clients.SearchClient;
+import com.yuan.param.ProductDetailParam;
 import com.yuan.param.ProductHotParam;
+import com.yuan.param.ProductIdsParams;
+import com.yuan.param.ProductSearchParam;
+import com.yuan.pojo.Picture;
 import com.yuan.pojo.Product;
+import com.yuan.product.mapper.PictureMapper;
 import com.yuan.product.mapper.ProductMapper;
 import com.yuan.product.service.ProductService;
 import com.yuan.utils.R;
@@ -31,7 +37,8 @@ public class ProductServiceImpl implements ProductService {
         //引入feign客户端需要,在启动类添加配置注解
         @Resource
         private CategoryClient categoryClient;
-
+        @Resource
+        private SearchClient searchClient;
         @Resource
         private ProductMapper productMapper;
         /**
@@ -56,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
             LinkedHashMap<String,Object> map= (LinkedHashMap<String, Object>) r.getData();
 
-            Integer categoryId= (Integer) map.get("categoryId");
+            Integer categoryId= (Integer) map.get("category_id");
             //封装查询参数
             QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("category_id",categoryId);
@@ -111,6 +118,120 @@ public class ProductServiceImpl implements ProductService {
 
         return ok;
     }
+
+    /**
+     * 查询类别商品集合
+     *
+     * @return
+     */
+    @Override
+    public R clist() {
+        R r = categoryClient.list();
+        log.info("ProductServiceImpl.clist业务结束，结果:{}",r);
+            return r;
+    }
+
+    /**
+     * 根据类别集合查询商品信息
+     *
+     * @param productIdsParams
+     * @return
+     */
+    @Override
+    public R byCategory(ProductIdsParams productIdsParams) {
+        List<Integer> categoryId=productIdsParams.getCategoryID();
+      QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
+        if (!categoryId.isEmpty())
+        {
+            queryWrapper.in("category_id",categoryId);
+        }
+        IPage<Product> page=new Page<>(productIdsParams.getCurrentPage(),productIdsParams.getPageSize());
+       page= productMapper.selectPage(page, queryWrapper);
+        R ok = R.ok("查询成功", page.getRecords(), page.getTotal());
+
+        log.info("ProductServiceImpl.byCategory业务结束，结果:{}",ok);
+        return ok;
+
+    }
+
+    /**
+     * 根据id查询商品的详细信息
+     *
+     * @param productDetailParam
+     * @return 返回商品详细信息
+     */
+    @Override
+    public R detail(ProductDetailParam productDetailParam) {
+
+       Product product=productMapper.selectById(productDetailParam.getProductID());
+
+        R ok = R.ok(product);
+
+        log.info("ProductServiceImpl.detail业务结束，结果:{}",ok);
+        return ok;
+
+    }
+
+
+    @Resource
+  private   PictureMapper pictureMapper;
+    /**
+     * 根据id查询商品的图片信息
+     *
+     * @param productID
+     * @return 返回商品图片信息
+     */
+    @Override
+    public R pictures(Integer productID) {
+
+        //参数封装
+        QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productID);
+        queryWrapper.select("id","product_picture");
+        //数据库查询
+        List<Picture> pictureList = pictureMapper.selectList(queryWrapper);
+        //结果封装
+        R r = R.ok(pictureList);
+
+        log.info("ProductServiceImpl.pictures业务结束，结果:{}",r);
+
+        return r;
+
+
+
+
+    }
+
+    /**
+     * 查询全部商品信息,供search服务
+     * 进行数据的同步
+     *
+     * @return
+     */
+    @Override
+    public List<Product> list() {
+        List<Product> products = productMapper.selectList(null);
+
+        log.info("ProductServiceImpl。list  业务" +products);
+        return  products;
+
+    }
+
+    /**
+     * 根据search参数查询商品
+     *
+     * @param productSearchParam
+     * @return
+     */
+    @Override
+    public R search(ProductSearchParam productSearchParam) {
+
+R r=searchClient.search(productSearchParam);
+
+        return r;
+    }
+
+
 }
 
 

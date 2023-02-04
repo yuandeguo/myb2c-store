@@ -23,4 +23,10 @@ public interface CategoryService {
      * @return
      */
     R hotsCategory(ProductHotParam productHotParam);
+
+    /**
+     * 查询类别数据进行返回
+     * @return
+     */
+    R list();
 }
