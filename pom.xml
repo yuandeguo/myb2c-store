@@ -17,6 +17,9 @@
         <module>store-front-product3004</module>
         <module>store-front-category3005</module>
         <module>store-search3007</module>
+        <module>store-front-collect3008</module>
+        <module>store-front-cart3009</module>
+        <module>store-front-order3010</module>
     </modules>
     <!--
     父工程，不开发代码

@@ -123,4 +123,7 @@ public R detail(@RequestBody @Validated ProductDetailParam productDetailParam, B
         return productService.pictures(productID);
     }
 
+
+
+
 }

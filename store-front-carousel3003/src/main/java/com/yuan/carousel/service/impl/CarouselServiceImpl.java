@@ -8,6 +8,7 @@ import com.yuan.carousel.service.CarouselService;
 import com.yuan.pojo.Carousel;
 import com.yuan.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,8 +29,10 @@ public class CarouselServiceImpl implements CarouselService {
    private CarouselMapper carouselMapper;
     /**
      * 查询优先级最高的四条轮播图数据
+     * 缓存一天。
      * @return
      */
+    @Cacheable(value = "list.carousel",key = "#root.methodName",cacheManager = "cacheManagerDay")
     @Override
     public R list() {
 

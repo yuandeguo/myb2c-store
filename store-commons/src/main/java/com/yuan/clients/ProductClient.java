@@ -1,10 +1,18 @@
 package com.yuan.clients;
 
+import com.yuan.param.ProductCollectParam;
+import com.yuan.pojo.Collect;
 import com.yuan.pojo.Product;
+import com.yuan.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yuanyuan
@@ -21,4 +29,13 @@ public interface ProductClient {
      */
     @GetMapping("/product/list")
     List<Product> list();
+
+    @PostMapping("/product/collect/list")
+    R productIds(@RequestBody ProductCollectParam productCollectParam);
+    @PostMapping("/product/cart/detail")
+     Product cdetail(@RequestBody Map<String,Integer> param);
+
+    @PostMapping("/product/cart/list")
+     List<Product> cartList(@RequestBody  ProductCollectParam param);
+
 }

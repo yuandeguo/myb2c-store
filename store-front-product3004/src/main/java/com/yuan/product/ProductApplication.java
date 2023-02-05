@@ -8,6 +8,7 @@ import com.yuan.clients.SearchClient;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
@@ -16,10 +17,12 @@ import org.springframework.context.annotation.Bean;
  * @version V1.0
  * @date 2023/2/3 15:20
  * @Description 商品服务
+ * EnableCaching支持缓存
  */
 @SpringBootApplication
 @EnableFeignClients(clients = {CategoryClient.class, SearchClient.class})
 @MapperScan(basePackages = "com.yuan.product.mapper")
+@EnableCaching
 public class ProductApplication {
     public static void main(String[] args) {
         SpringApplication.run(ProductApplication.class,args);

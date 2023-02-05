@@ -1,4 +1,4 @@
-package com.yuan.search;
+package com.yuan.search.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.clients.ProductClient;
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class listenerApplicationRunListener implements ApplicationRunner {
+public class ApplicationRunListener implements ApplicationRunner {
     @Resource
     private RestHighLevelClient restHighLevelClient;
 

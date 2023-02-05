@@ -16,6 +16,7 @@ import com.yuan.product.mapper.ProductMapper;
 import com.yuan.product.service.ProductService;
 import com.yuan.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +27,8 @@ import java.util.List;
  * @author yuanyuan
  * @version V1.0
  * @date 2023/2/3 16:27
- * @Description null
+ * @Description 缓存说明：value是一个分片，缓存分区，key是这个缓存空间的唯一表示。
+ *              存的值是函数返回值
  */
 
 @Service
@@ -41,16 +43,22 @@ public class ProductServiceImpl implements ProductService {
         private SearchClient searchClient;
         @Resource
         private ProductMapper productMapper;
-        /**
-         * 单类别名称 查询热门商品 至多7条数据
-         *    1. 根据类别名称 调用 feign客户端访问类别服务获取类别的数据
-         *    2. 成功 继续根据类别id查询商品数据  [热门 销售量倒序 查询7]
-         *    3. 结果封装即可
+
+
+    /**
+     * 单类别名称 查询热门商品 至多7条数据
+     *    1. 根据类别名称 调用 feign客户端访问类别服务获取类别的数据
+     *    2. 成功 继续根据类别id查询商品数据  [热门 销售量倒序 查询7]
+     *    3. 结果封装即可
+     *    cacheManagerHour是在配置类上的
+     *
+     *
          * @param categoryName 类别名称
          * @return r
-         */
-        @Override
-        public R promo(String categoryName) {
+    */
+    @Override
+    @Cacheable(value = "list.product",key = "#categoryName",cacheManager = "cacheManagerHour")
+    public R promo(String categoryName) {
 
             R r = categoryClient.byName(categoryName);
 
@@ -91,6 +99,7 @@ public class ProductServiceImpl implements ProductService {
      * @return r
      */
     @Override
+    @Cacheable(value = "list.product",key = "#productHotParam.categoryName")
     public R hots(ProductHotParam productHotParam) {
         R r = categoryClient.hotsCategory(productHotParam);
 
@@ -133,11 +142,12 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据类别集合查询商品信息
-     *
+     * 空集合为全部商品
      * @param productIdsParams
      * @return
      */
     @Override
+    @Cacheable(value = "list.product",key="#productIdsParams.categoryID+'-'+#productIdsParams.currentPage+'-'+#productIdsParams.pageSize")
     public R byCategory(ProductIdsParams productIdsParams) {
         List<Integer> categoryId=productIdsParams.getCategoryID();
       QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
@@ -154,6 +164,8 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+
+
     /**
      * 根据id查询商品的详细信息
      *
@@ -161,6 +173,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回商品详细信息
      */
     @Override
+    @Cacheable(value = "product",key = "#productDetailParam.productID")
     public R detail(ProductDetailParam productDetailParam) {
 
        Product product=productMapper.selectById(productDetailParam.getProductID());
@@ -182,6 +195,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回商品图片信息
      */
     @Override
+    @Cacheable(value = "picture",key = "#productID")
     public R pictures(Integer productID) {
 
         //参数封装
@@ -209,6 +223,7 @@ public class ProductServiceImpl implements ProductService {
      * @return
      */
     @Override
+    @Cacheable(value = "list.category",key = "#root.methodName")
     public List<Product> list() {
         List<Product> products = productMapper.selectList(null);
 
@@ -229,6 +244,41 @@ public class ProductServiceImpl implements ProductService {
 R r=searchClient.search(productSearchParam);
 
         return r;
+    }
+
+    /**
+     * 根据商品id的集合查询商品
+     *
+     * @param productIds
+     * @return
+     */
+    @Cacheable(value = "list.product",key = "#productIds")
+    @Override
+    public R ids(List<Integer> productIds) {
+
+        QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
+        queryWrapper.in("product_id",productIds);
+        List<Product> products = productMapper.selectList(queryWrapper);
+
+        R r = R.ok("根据id集合信息查询成功", products);
+        return r;
+
+    }
+
+    /**
+     * 根据商品id的集合查询商品
+     *
+     * @param productIds
+     * @return
+     */
+    @Override
+    public List<Product> cartList(List<Integer> productIds) {
+        QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
+        queryWrapper.in("product_id",productIds);
+        List<Product> products = productMapper.selectList(queryWrapper);
+
+        log.info("***ProductServiceImpl.cartList业务结束，结果:{}", products);
+        return products;
     }
 
 
