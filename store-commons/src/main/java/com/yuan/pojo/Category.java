@@ -18,6 +18,6 @@ public class Category {
 @TableId(type = IdType.AUTO)
 @JsonProperty("category_id")
   private  Integer  categoryId;
-  @JsonProperty("categoryName")
+  @JsonProperty("category_name")
 private String categoryName;
 }

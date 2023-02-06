@@ -2,6 +2,7 @@ package com.yuan.user.controller;
 
 import com.sun.jndi.cosnaming.CNCtx;
 import com.yuan.param.AddressListParam;
+import com.yuan.param.AddressParam;
 import com.yuan.param.AddressRemoveParam;
 import com.yuan.pojo.Address;
 import com.yuan.user.service.AddressService;
@@ -50,17 +51,20 @@ public class AddressController {
 
     /**
      *保存地址，最后返回该用户的所有地址
-     * @param address
+     * @param addressParam
      * @param result
      * @return
      */
     @PostMapping("save")
-    public R save(@RequestBody @Validated Address address,BindingResult result)
+    public R save(@RequestBody @Validated AddressParam addressParam, BindingResult result)
     {
         if (result.hasErrors())
         {
             return R.fail("参数异常，地址保存失败!");
         }
+
+Address address=addressParam.getAdd();
+        address.setUserId(addressParam.getUserId());
 
     return addressService.save(address);
     }

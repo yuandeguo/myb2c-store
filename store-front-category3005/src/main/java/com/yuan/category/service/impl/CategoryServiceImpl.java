@@ -1,12 +1,16 @@
 package com.yuan.category.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.category.mapper.CategoryMapper;
 import com.yuan.category.service.CategoryService;
+import com.yuan.param.PageParam;
 import com.yuan.param.ProductHotParam;
 import com.yuan.pojo.Category;
 import com.yuan.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -82,5 +86,41 @@ private CategoryMapper categoryMapper;
     public R list() {
         List<Category> categories = categoryMapper.selectList(null);
  return R.ok("查询所有类别信息成功",categories);
+    }
+
+    @Override
+    public R listPage(PageParam pageParam) {
+        //分页参数
+        IPage<Category> page = new Page<>(pageParam.getCurrentPage()
+                ,pageParam.getPageSize());
+        //查询参数获取
+        page = categoryMapper.selectPage(page, null);
+
+        List<Category> records = page.getRecords();
+        long total = page.getTotal();
+
+        R r = R.ok("查询类别数据成功!", records, total);
+
+        log.info("CategoryServiceImpl.page业务结束，结果:{}",r);
+
+        return r;
+
+
+
+    }
+
+    @Override
+    public R save(Category category) {
+QueryWrapper<Category> queryWrapper=new QueryWrapper<>();
+queryWrapper.eq("category_name",category.getCategoryName());
+        Long aLong = categoryMapper.selectCount(queryWrapper);
+
+        if(aLong>0)
+        {
+            return R.fail("类别存在，添加失败");
+        }
+int insert=categoryMapper.insert(category);
+        log.info("***CategoryServiceImpl.save业务结束，结果:{}",insert );
+        return R.ok("添加成功");
     }
 }

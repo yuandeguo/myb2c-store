@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: admin-service3011
+  cloud:
+    nacos:
+      server-addr: 47.113.219.144:1111 #注册中心
+server:
+  port: 3011

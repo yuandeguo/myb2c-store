@@ -3,6 +3,8 @@ package com.yuan.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mysql.cj.xdevapi.SchemaImpl;
 import com.yuan.clients.CategoryClient;
 import com.yuan.clients.SearchClient;
 import com.yuan.param.ProductDetailParam;
@@ -14,6 +16,7 @@ import com.yuan.pojo.Product;
 import com.yuan.product.mapper.PictureMapper;
 import com.yuan.product.mapper.ProductMapper;
 import com.yuan.product.service.ProductService;
+import com.yuan.to.OrderToProduct;
 import com.yuan.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +25,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author yuanyuan
@@ -33,7 +39,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> implements ProductService {
 
 
         //引入feign客户端需要,在启动类添加配置注解
@@ -279,6 +285,41 @@ R r=searchClient.search(productSearchParam);
 
         log.info("***ProductServiceImpl.cartList业务结束，结果:{}", products);
         return products;
+    }
+
+    /**
+     * 修改库存，增加销售量
+     *
+     * @param orderToProductList
+     */
+    @Override
+    public void subNumber(List<OrderToProduct> orderToProductList) {
+
+        log.info("***ProductServiceImpl.subNumber业务开始，结果:{}",orderToProductList );
+//将productNumberParams转成map
+        //使用id作为key, item做值, 比较相邻的两次key,如果相同,去掉重读!
+        Map<Integer, OrderToProduct> orderToProductMap = orderToProductList.stream()
+                .collect(Collectors.toMap(OrderToProduct::getProductId, v -> v));
+        log.info("***ProductServiceImpl.subNumber业务开始map，结果:{}",orderToProductMap );
+        //封装商品集合
+        Set<Integer> productIds = orderToProductMap.keySet();
+
+        //查询
+        List<Product> productList = productMapper.selectBatchIds(productIds);
+        //修改
+
+        for (Product product : productList) {
+            //设置新库存
+            product.setProductNum(product.getProductNum() -
+                    orderToProductMap.get(product.getProductId()).getNum());
+            //设置销售量
+            product.setProductSales(product.getProductSales() +
+                    orderToProductMap.get(product.getProductId()).getNum());
+        }
+        //批量数据更新
+        this.updateBatchById(productList);
+
+
     }
 
 

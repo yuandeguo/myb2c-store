@@ -1,5 +1,6 @@
 package com.yuan.user.service;
 
+import com.yuan.param.PageParam;
 import com.yuan.param.UserCheckParam;
 import com.yuan.param.UserLoginParam;
 import com.yuan.pojo.User;
@@ -30,4 +31,11 @@ public interface UserService {
      * @return
      */
     R login(UserLoginParam userLoginParam);
+
+
+    R getUserList(PageParam pageParam);
+
+    R removeUser(Integer userId);
+
+    R update(User user);
 }

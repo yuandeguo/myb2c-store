@@ -1,6 +1,8 @@
 package com.yuan.clients;
 
+import com.yuan.param.PageParam;
 import com.yuan.param.ProductHotParam;
+import com.yuan.pojo.Category;
 import com.yuan.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
@@ -20,8 +22,17 @@ public interface CategoryClient {
 
     @GetMapping("/category/promo/{categoryName}")
     R byName(@PathVariable String categoryName);
+
     @PostMapping("/category/hots")
-     R hotsCategory(@RequestBody @Validated ProductHotParam productHotParam);
+    R hotsCategory(@RequestBody @Validated ProductHotParam productHotParam);
+
     @GetMapping("/category/list")
-     R list();
+    R list();
+
+    @PostMapping("/category/admin/list")
+    R list(@RequestBody PageParam pageParam);
+
+    @PostMapping("/category/admin/save")
+    R save(@RequestBody Category category);
+
 }

@@ -1,6 +1,8 @@
 package com.yuan.category.service;
 
+import com.yuan.param.PageParam;
 import com.yuan.param.ProductHotParam;
+import com.yuan.pojo.Category;
 import com.yuan.utils.R;
 
 /**
@@ -29,4 +31,8 @@ public interface CategoryService {
      * @return
      */
     R list();
+
+    R listPage(PageParam pageParam);
+
+    R save(Category category);
 }

@@ -1,5 +1,8 @@
 package com.yuan.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.param.PageParam;
 import com.yuan.param.UserCheckParam;
 import com.yuan.param.UserLoginParam;
 import com.yuan.pojo.User;
@@ -11,6 +14,7 @@ import com.yuan.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author yuanyuan
@@ -129,6 +133,43 @@ public class UserServiceImpl implements UserService {
         //不返回password属性!
         user.setPassword(null);
         return R.ok("登录成功!",user);
+    }
+
+    @Override
+    public R getUserList(PageParam pageParam) {
+        IPage<User> page=new Page<>(pageParam.getCurrentPage(),pageParam.getPageSize());
+        IPage<User> page1 = userMapper.selectPage(page, null);
+        List<User> records = page1.getRecords();
+        Long total=page1.getTotal();
+        return R.ok("用户数据查询成功",records,total);
+
+
+    }
+
+    @Override
+    public R removeUser(Integer userId) {
+        int i = userMapper.deleteById(userId);
+        log.info("***UserServiceImpl.removeUser业务结束，结果:{}", i);
+        return R.ok("用户数据删除成功");
+    }
+
+    @Override
+    public R update(User user) {
+
+        //检查密码,如果和数据库一致 不需要加密! 证明密码没有修改!
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",user.getUserId());
+        queryWrapper.eq("password",user.getPassword());
+        Long total = userMapper.selectCount(queryWrapper);
+        if (total == 0){
+            //密码不同,已经修改! 新密码需要加密
+            user.setPassword(MD5Util.encode(user.getPassword()+ UserConstants.USER_SLAT));
+        }
+        int rows = userMapper.updateById(user);
+        if (rows == 0){
+            return R.fail("用户修改失败!");
+        }
+        return R.fail("用户修改成功");
     }
 
 

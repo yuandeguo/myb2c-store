@@ -35,7 +35,6 @@ public class Address implements Serializable {
     @NotBlank
     private String address;
 
-    @NotNull
     @TableField("user_id")//数据库名称对应，这里可以不写
     @JsonProperty("user_id")  //对应的json的key
     private Integer userId;

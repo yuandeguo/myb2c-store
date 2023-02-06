@@ -1,10 +1,12 @@
 package com.yuan.product.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.yuan.param.ProductDetailParam;
 import com.yuan.param.ProductHotParam;
 import com.yuan.param.ProductIdsParams;
 import com.yuan.param.ProductSearchParam;
 import com.yuan.pojo.Product;
+import com.yuan.to.OrderToProduct;
 import com.yuan.utils.R;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
  * @date 2023/2/3 16:26
  * @Description null
  */
-public interface ProductService {
+public interface ProductService extends IService<Product> {
 
     /**
      * 根据类别名称查找商品
@@ -84,4 +86,10 @@ public interface ProductService {
      * @return
      */
     List<Product> cartList(List<Integer> productIds);
+
+    /**
+     * 修改库存，增加销售量
+     * @param orderToProductList
+     */
+    void subNumber(List<OrderToProduct> orderToProductList);
 }
